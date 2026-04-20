@@ -96,6 +96,10 @@
                                     <a href="<?= base_url('barang/delete/' . $b['id_barang']) ?>" class="btn btn-outline-danger btn-sm flex-fill fw-bold rounded-3" onclick="return confirm('Hapus?')">Hapus</a>
                                 </div>
                             <?php else : ?>
+                                <a href="<?= base_url('wishlist/tambah/' . $b['id_barang']) ?>" class="btn btn-sm btn-outline-danger border-0 fw-bold rounded-3 mb-1">
+                                    <i class="bi bi-heart-fill me-1"></i> Simpan ke Wishlist
+                                </a>
+
                                 <button type="button"
                                     class="btn btn-primary fw-bold py-2 rounded-3 shadow-sm btn-pinjam-sekarang"
                                     <?= ($b['stok'] <= 0) ? 'disabled' : '' ?>
@@ -107,7 +111,6 @@
                                     data-stok="<?= $b['stok'] ?>">
                                     <?= ($b['stok'] <= 0) ? 'Stok Kosong' : 'Pinjam Sekarang' ?>
                                 </button>
-
                             <?php endif; ?>
                         </div>
                     </div>

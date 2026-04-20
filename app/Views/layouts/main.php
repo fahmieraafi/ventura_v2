@@ -166,6 +166,13 @@
                             <i class="bi bi-box-seam me-2"></i>Data Barang
                         </a>
                     </li>
+                    <?php if (session()->get('role') == 'user' || session()->get('role') == 'user') : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('wishlist') ?>">
+                                <i class="bi bi-heart-fill text-danger me-1"></i> Wishlist
+                            </a>
+                        </li>
+                    <?php endif; ?>
                     <li class="nav-item">
                         <a class="nav-link nav-link-ventura text-info" href="<?= base_url('gunung') ?>">
                             <i class="bi bi-geo-alt me-2"></i> <span>Explore</span>

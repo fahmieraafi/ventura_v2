@@ -44,6 +44,11 @@ $routes->post('barang/update/(:num)', 'Barang::update/$1', $adminFilter);
 $routes->get('barang/delete/(:num)', 'Barang::delete/$1', $adminFilter);
 $routes->post('barang/hapusFotoSatuan', 'Barang::hapusFotoSatuan', $adminFilter);
 
+// --- FITUR WISHLIST (SIMPAN BARANG) ---
+$routes->get('wishlist', 'Wishlist::index', $allRoleFilter);
+$routes->get('wishlist/tambah/(:num)', 'Wishlist::tambah/$1', $allRoleFilter);
+$routes->get('wishlist/hapus/(:num)', 'Wishlist::hapus/$1', $allRoleFilter);
+
 // --- FITUR EXPLORE (INFO GUNUNG) ---
 // Semua role bisa melihat daftar gunung dan detail gunung
 $routes->get('gunung', 'Explore::index', $allRoleFilter);
@@ -90,5 +95,4 @@ $routes->group('admin', $adminFilter, function ($routes) {
 });
 
 // --- FITUR AI ASSISTANT ---
-// Ganti baris paling bawah jadi begini:
 $routes->post('chat/tanyaAi', 'Chat::tanyaAi');
