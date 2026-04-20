@@ -77,7 +77,16 @@
                             <?php endif; ?>
                         </td>
 
-                        <td class="fw-semibold text-secondary"><?= $t['nama_barang']; ?></td>
+                        <td class="fw-semibold text-secondary"><?= $t['nama_barang']; ?>
+                            <small class="text-muted">Durasi:
+                                <?php
+                                $awal  = strtotime($t['tgl_pinjam']);
+                                $akhir = strtotime($t['tgl_kembali']);
+                                $hari  = ceil(($akhir - $awal) / (60 * 60 * 24));
+                                echo ($hari <= 0 ? 1 : $hari) . " /H";
+                                ?>
+                            </small>
+                        </td>
                         <td><span class="badge bg-light text-dark border"><i class="bi bi-calendar-event me-1"></i> <?= date('d M Y', strtotime($t['tgl_pinjam'])); ?></span></td>
                         <td><span class="badge bg-light text-dark border"><i class="bi bi-calendar-event me-1"></i> <?= date('d M Y', strtotime($t['tgl_kembali'])); ?></span></td>
 

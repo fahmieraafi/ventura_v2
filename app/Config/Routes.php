@@ -88,3 +88,7 @@ $routes->group('admin', $adminFilter, function ($routes) {
     $routes->get('transaksi/markAsRead/(:num)', 'Transaksi::markAsRead/$1');
     $routes->get('transaksi/hitungDenda/(:num)', 'Transaksi::hitungDenda/$1');
 });
+
+// --- FITUR AI ASSISTANT ---
+// Ganti baris paling bawah jadi begini:
+$routes->post('chat/tanyaAi', 'Chat::tanyaAi');

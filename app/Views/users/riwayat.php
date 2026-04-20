@@ -88,7 +88,7 @@
                                     </td>
                                     <td>
                                         <?php if ($t['status_transaksi'] == 'Waiting') : ?>
-                                            <span class="badge bg-info text-dark rounded-pill px-3">Konfirmasi</span>
+                                            <span class="badge bg-info text-dark rounded-pill px-3">Menunggu Konfirmasi</span>
                                         <?php elseif ($t['status_transaksi'] == 'Booking') : ?>
                                             <span class="badge bg-warning text-dark rounded-pill px-3">Booking</span>
                                         <?php elseif ($t['status_transaksi'] == 'Dipinjam') : ?>
@@ -102,7 +102,7 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-1">
                                             <?php if ($t['status_transaksi'] == 'Booking') : ?>
-                                                <a href="http://googleusercontent.com/maps.google.com/6" target="_blank" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm">
+                                                <a href="https://www.google.com/maps/search/5VRR+C28, Gunturmekar, Tanjungkerta, Sumedang Regency, West Java 45354" target="_blank" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm">
                                                     <i class="bi bi-geo-alt-fill"></i> Lokasi
                                                 </a>
                                                 <a href="<?= base_url('transaksi/batal/' . $t['id_transaksi']) ?>"
