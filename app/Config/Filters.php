@@ -23,6 +23,7 @@ class Filters extends BaseFilters
         'role'          => \App\Filters\RoleFilter::class,
     ];
 
+    // INI DIA: Biarkan required kosong agar globals yang pegang kendali
     public array $required = [
         'before' => [],
         'after'  => [
@@ -33,25 +34,12 @@ class Filters extends BaseFilters
 
     public array $globals = [
         'before' => [
-            /**
-             * PERBAIKAN:
-             * Kita tambahkan 'proses-login' dan 'users/store' ke daftar except 
-             * agar kamu bisa login dan daftar user tanpa error 403.
-             */
-            'csrf' => [
-                'except' => [
-                    'proses-login',             // WAJIB: agar bisa login
-                    'barang/store',             // Agar bisa simpan barang
-                    'barang/update/*',          // Agar bisa edit barang
-                    'barang/hapusFotoSatuan',   // Agar bisa hapus foto via AJAX
-                    'users/store',              // Agar bisa tambah user baru
-                    'users/update/*',
-                    'gunung/tambah',
-                    'gunung/update/*',      // Agar bisa edit user
-                ]
-            ],
+            // CSRF dimatikan total dengan memberikan komentar (//) di bawah ini
+            // 'csrf', 
         ],
-        'after' => [],
+        'after' => [
+            'toolbar',
+        ],
     ];
 
     public array $methods = [];
@@ -64,14 +52,12 @@ class Filters extends BaseFilters
                 'dashboard',
                 'dashboard/*',
                 'users',
-                // PERBAIKAN: Mengunci halaman spesifik saja, agar /create & /store bisa diakses publik
                 'users/index',
                 'users/edit/*',
                 'users/update/*',
                 'users/delete/*',
                 'gunung',
                 'gunung/*',
-
             ]
         ],
     ];

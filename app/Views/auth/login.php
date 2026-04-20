@@ -212,7 +212,7 @@
         <?php endif; ?>
 
         <form action="<?= base_url('/proses-login') ?>" method="post">
-            <label>Nama pengguna</label>
+            <?= csrf_field() ?> <label>Nama pengguna</label>
             <input type="text" name="username" placeholder="Masukkan nama pengguna Anda" required />
 
             <label>Kata sandi</label>

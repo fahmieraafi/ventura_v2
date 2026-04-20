@@ -89,7 +89,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* --- Style Chat Widget --- */
         #chat-window {
             bottom: 90px;
             right: 20px;
@@ -201,18 +200,82 @@
                     <a class="text-white text-decoration-none position-relative" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-bell fs-5"></i>
                         <?php
-                        $total_badge = $notif_count + (isset($total_terlambat) ? $total_terlambat : 0);
+                        // Mengamankan variabel agar tidak error jika belum didefinisikan
+                        $current_notif_count = isset($notif_count) ? $notif_count : 0;
+                        $current_terlambat = isset($total_terlambat) ? $total_terlambat : 0;
+
+                        $total_badge = $current_notif_count + $current_terlambat;
+
                         if ($total_badge > 0) : ?>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;">
                                 <?= $total_badge ?>
                             </span>
                         <?php endif; ?>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark p-2 animate__animated animate__fadeIn" style="width: 300px;">
-                        <li class="px-3 py-2 border-bottom border-secondary mb-2">
-                            <h6 class="mb-0 small fw-bold text-info">Notifikasi</h6>
-                        </li>
-                        <li class="text-center py-2 text-muted small">Cek detail di menu transaksi</li>
+
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark p-2 animate__animated animate__fadeIn" style="width: 300px; max-height: 400px; overflow-y: auto;">
+
+                        <?php if (session()->get('role') == 'admin' || session()->get('role') == 'Admin') : ?>
+                            <li class="px-3 py-2 border-bottom border-secondary mb-2">
+                                <h6 class="mb-0 small fw-bold text-info">Pesanan Baru</h6>
+                            </li>
+
+                            <?php if ($current_notif_count > 0 && isset($notif_list)) : ?>
+                                <?php foreach ($notif_list as $n) : ?>
+                                    <li class="p-2 border-bottom border-secondary">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <small class="d-block fw-bold text-info"><?= $n['nama_user'] ?? 'User' ?></small>
+                                                <small class="text-muted" style="font-size: 11px;">Melakukan penyewaan baru.</small>
+                                            </div>
+                                            <a href="<?= base_url('admin/transaksi/markAsRead/' . ($n['id_transaksi'] ?? '')) ?>" class="btn btn-sm btn-outline-light py-0 px-1" title="Tandai Dibaca">
+                                                <i class="bi bi-check2"></i>
+                                            </a>
+                                        </div>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <li class="text-center py-2 text-muted small">Tidak ada pesanan baru</li>
+                            <?php endif; ?>
+
+                            <li class="px-3 py-2 border-bottom border-secondary my-2">
+                                <h6 class="mb-0 small fw-bold text-danger">Keterlambatan</h6>
+                            </li>
+
+                            <?php if ($current_terlambat > 0 && isset($list_terlambat)) : ?>
+                                <?php foreach ($list_terlambat as $lt) : ?>
+                                    <li class="p-2 border-bottom border-secondary bg-danger bg-opacity-10">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                                            <div>
+                                                <small class="d-block fw-bold text-danger"><?= $lt['nama_user'] ?></small>
+                                                <small class="text-white" style="font-size: 10px;">Telat mengembalikan: <b><?= $lt['nama_barang'] ?></b></small>
+                                            </div>
+                                        </div>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <li class="text-center py-2 text-muted small">Semua pengembalian tepat waktu</li>
+                            <?php endif; ?>
+
+                        <?php else : ?>
+                            <li class="px-3 py-2 border-bottom border-secondary mb-2">
+                                <h6 class="mb-0 small fw-bold">Pemberitahuan</h6>
+                            </li>
+                            <?php if ($current_notif_count > 0) : ?>
+                                <li class="p-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-exclamation-circle text-danger me-2"></i>
+                                        <div>
+                                            <small class="d-block fw-bold">Perhatian!</small>
+                                            <small class="text-muted">Kamu memiliki <?= $current_notif_count ?> transaksi dengan denda yang belum dibayar.</small>
+                                        </div>
+                                    </div>
+                                </li>
+                            <?php else : ?>
+                                <li class="text-center py-3 text-muted small">Tidak ada notifikasi denda</li>
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </ul>
                 </div>
 
@@ -237,6 +300,20 @@
     </nav>
 
     <div class="main-container">
+        <?php if (session()->getFlashdata('success')) : ?>
+            <div class="alert alert-success alert-dismissible fade show animate__animated animate__fadeInDown" role="alert" style="background: rgba(21, 128, 61, 0.2); border: 1px solid #22c55e; color: #fff; border-radius: 12px;">
+                <i class="bi bi-check-circle-fill me-2"></i> <?= session()->getFlashdata('success') ?>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('error')) : ?>
+            <div class="alert alert-danger alert-dismissible fade show animate__animated animate__shakeX" role="alert" style="background: rgba(185, 28, 28, 0.2); border: 1px solid #ef4444; color: #fff; border-radius: 12px;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> <?= session()->getFlashdata('error') ?>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="content-card">
             <?= $this->renderSection('content') ?>
         </div>
@@ -274,7 +351,9 @@
             });
 
             function scrollToBottom() {
-                $('#chat-body').scrollTop($('#chat-body')[0].scrollHeight);
+                if ($('#chat-body').length) {
+                    $('#chat-body').scrollTop($('#chat-body')[0].scrollHeight);
+                }
             }
 
             function sendChat() {
@@ -293,7 +372,6 @@
                     method: "POST",
                     data: {
                         pesan: pesan,
-                        // TAMBAHAN TOKEN KEAMANAN (CSRF)
                         "<?= csrf_token() ?>": "<?= csrf_hash() ?>"
                     },
                     success: function(response) {

@@ -25,7 +25,9 @@ class Transaksi extends BaseController
     public function index()
     {
         $keyword = $this->request->getVar('cari');
+        $today = date('Y-m-d');
 
+        // Query utama untuk tabel transaksi
         $query = $this->transaksiModel->select('transaksi.*, barang.nama_barang, users.nama as nama_user, users.no_wa')
             ->join('barang', 'barang.id_barang = transaksi.id_barang')
             ->join('users', 'users.id_user = transaksi.id_user');
@@ -39,27 +41,36 @@ class Transaksi extends BaseController
                 ->groupEnd();
         }
 
-        // --- TAMBAHAN LOGIKA UNTUK DASHBOARD & LONCENG ---
-        $today = date('Y-m-d');
+        // --- LOGIKA UNTUK NOTIFIKASI LONCENG ---
 
-        // Menghitung total transaksi yang terlambat (lewat tgl kembali & status masih Dipinjam)
-        $totalTerlambat = $this->transaksiModel
+        // 1. Ambil DAFTAR orang yang terlambat (untuk dimunculkan di dropdown)
+        $listTerlambat = $this->transaksiModel->select('transaksi.*, users.nama as nama_user, barang.nama_barang')
+            ->join('users', 'users.id_user = transaksi.id_user')
+            ->join('barang', 'barang.id_barang = transaksi.id_barang')
             ->where('tgl_kembali <', $today)
             ->where('status_transaksi', 'Dipinjam')
-            ->countAllResults();
+            ->findAll();
 
-        // Menghitung jumlah barang yang saat ini sedang dibawa/dipinjam oleh user
-        $barangDipinjam = $this->transaksiModel
-            ->where('status_transaksi', 'Dipinjam')
-            ->countAllResults();
-        // ------------------------------------------------
+        // 2. Ambil DAFTAR pesanan baru (Booking) yang belum dibaca admin
+        $notifList = $this->transaksiModel->select('transaksi.*, users.nama as nama_user, barang.nama_barang')
+            ->join('users', 'users.id_user = transaksi.id_user')
+            ->join('barang', 'barang.id_barang = transaksi.id_barang')
+            ->where('is_read', 0)
+            ->where('status_transaksi', 'Booking')
+            ->findAll();
 
         $data = [
             'title'             => 'Kelola Transaksi - Admin Ventura',
             'transaksi'         => $query->orderBy('transaksi.created_at', 'DESC')->findAll(),
             'cari'              => $keyword,
-            'total_terlambat'   => $totalTerlambat, // Kirim ke view untuk lonceng
-            'barang_dipinjam'   => $barangDipinjam  // Kirim ke view untuk card dashboard
+
+            // Data untuk Lonceng Navbar
+            'total_terlambat'   => count($listTerlambat),
+            'list_terlambat'    => $listTerlambat, // WAJIB ADA agar bisa di-foreach di View
+            'notif_count'       => count($notifList),
+            'notif_list'        => $notifList,     // WAJIB ADA
+
+            'barang_dipinjam'   => $this->transaksiModel->where('status_transaksi', 'Dipinjam')->countAllResults()
         ];
 
         return view('admin/transaksi/index', $data);
