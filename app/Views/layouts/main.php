@@ -161,6 +161,8 @@
                             <i class="bi bi-house-door me-2"></i>Dashboard
                         </a>
                     </li>
+
+
                     <li class="nav-item">
                         <a class="nav-link nav-link-ventura" href="<?= base_url('barang') ?>">
                             <i class="bi bi-box-seam me-2"></i>Data Barang
@@ -295,11 +297,19 @@
                         <img src="<?= base_url('uploads/users/' . (session()->get('foto') ?: 'default.png')) ?>" class="user-avatar" alt="User">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+
                         <li><a class="dropdown-item" href="<?= base_url('users/edit/' . session()->get('id_user')) ?>"><i class="bi bi-person me-2"></i>Profil</a></li>
                         <li>
                             <hr class="dropdown-divider border-secondary">
                         </li>
                         <li><a class="dropdown-item text-danger" href="<?= base_url('logout') ?>"><i class="bi bi-box-arrow-right me-2"></i>Keluar</a></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= base_url('backup') ?>">
+                                <i class="bi bi-download"></i> <span>Backup</span>
+                            </a>
+                        </li>
+
                     </ul>
                 </div>
             </div>
@@ -353,48 +363,77 @@
 
     <script>
         $(document).ready(function() {
+            // Toggle Jendela Chat
             $('#chat-toggle, #chat-close').click(function() {
                 $('#chat-window').toggleClass('d-none');
+                scrollToBottom();
             });
 
             function scrollToBottom() {
-                if ($('#chat-body').length) {
-                    $('#chat-body').scrollTop($('#chat-body')[0].scrollHeight);
+                let chatBody = $('#chat-body');
+                if (chatBody.length) {
+                    chatBody.animate({
+                        scrollTop: chatBody[0].scrollHeight
+                    }, 300);
                 }
             }
 
             function sendChat() {
-                let pesan = $('#chat-input').val();
-                if (pesan.trim() === '') return;
+                let inputField = $('#chat-input');
+                let pesan = inputField.val().trim();
 
+                if (pesan === '') return;
+
+                // Tampilkan pesan user
                 $('#chat-body').append(`<div class="user-msg">${pesan}</div>`);
-                $('#chat-input').val('');
+                inputField.val(''); // Kosongkan input
                 scrollToBottom();
 
-                $('#chat-body').append(`<div id="ai-loading" class="ai-msg italic small">Sedang berpikir...</div>`);
+                // Tampilkan loading
+                let loadingId = "ai-loading-" + Date.now();
+                $('#chat-body').append(`<div id="${loadingId}" class="ai-msg italic small"><i class="bi bi-three-dots animate__animated animate__flash animate__infinite"></i> Sedang berpikir...</div>`);
                 scrollToBottom();
 
                 $.ajax({
                     url: "<?= base_url('chat/tanyaAi') ?>",
                     method: "POST",
+                    dataType: "json", // Pastikan menerima JSON
                     data: {
                         pesan: pesan,
                         "<?= csrf_token() ?>": "<?= csrf_hash() ?>"
                     },
                     success: function(response) {
-                        $('#ai-loading').remove();
-                        $('#chat-body').append(`<div class="ai-msg">${response.jawaban}</div>`);
+                        $(`#${loadingId}`).remove();
+                        // Ambil jawaban, jika kosong beri pesan default
+                        let jawaban = response.jawaban ? response.jawaban : "Maaf, saya tidak mengerti.";
+                        $('#chat-body').append(`<div class="ai-msg">${jawaban}</div>`);
                         scrollToBottom();
                     },
-                    error: function() {
-                        $('#ai-loading').text("Maaf, koneksi terputus.");
+                    error: function(xhr) {
+                        $(`#${loadingId}`).removeClass('ai-msg').addClass('text-danger small px-3 mb-2');
+
+                        if (xhr.status === 429) {
+                            $(`#${loadingId}`).html("<i class='bi bi-exclamation-circle'></i> Limit tercapai. Mohon tunggu sebentar atau coba lagi besok.");
+                        } else {
+                            $(`#${loadingId}`).html("<i class='bi bi-wifi-off'></i> Gagal mendapatkan respon. Cek koneksi atau kuota API.");
+                        }
+                        scrollToBottom();
                     }
                 });
             }
 
-            $('#chat-send').click(sendChat);
-            $('#chat-input').keypress(function(e) {
-                if (e.which == 13) sendChat();
+            // Event listener klik tombol send
+            $('#chat-send').click(function(e) {
+                e.preventDefault();
+                sendChat();
+            });
+
+            // Event listener tekan Enter
+            $('#chat-input').on('keypress', function(e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    sendChat();
+                }
             });
         });
     </script>

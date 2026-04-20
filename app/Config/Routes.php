@@ -94,5 +94,8 @@ $routes->group('admin', $adminFilter, function ($routes) {
     $routes->get('transaksi/hitungDenda/(:num)', 'Transaksi::hitungDenda/$1');
 });
 
+// Backup Database
+$routes->get('/backup', 'Backup::database');
+
 // --- FITUR AI ASSISTANT ---
 $routes->post('chat/tanyaAi', 'Chat::tanyaAi');

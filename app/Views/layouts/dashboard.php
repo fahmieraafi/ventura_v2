@@ -146,7 +146,7 @@
                     <div class="card-body p-4 d-flex align-items-center justify-content-between">
                         <div>
                             <p class="text-white-50 text-uppercase fw-bold mb-1 fs-12 tracking-wider">Data Barang</p>
-                            <h1 class="text-white fw-bold display-5 mb-1"><?= $totalBarang; ?></h1>
+                            <h1 class="text-white fw-bold display-5 mb-1 counter-value" data-target="<?= $totalBarang; ?>">0</h1>
                             <p class="text-white-50 mb-0 small">Total barang alat kamping</p>
                         </div>
                         <div class="icon-shape bg-gradient-info shadow-info">
@@ -164,7 +164,7 @@
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
                                 <p class="text-white-50 text-uppercase fw-bold mb-1 fs-12 tracking-wider">Total Users</p>
-                                <h1 class="text-white fw-bold display-5 mb-1"><?= $totalUser; ?></h1>
+                                <h1 class="text-white fw-bold display-5 mb-1 counter-value" data-target="<?= $totalUser; ?>">0</h1>
                                 <p class="text-white-50 mb-0 small">User terdaftar sistem</p>
                             </div>
                             <div class="icon-shape bg-gradient-info shadow-info">
@@ -181,7 +181,7 @@
                         <div class="card-body p-4 d-flex align-items-center justify-content-between">
                             <div>
                                 <p class="text-info text-uppercase fw-bold mb-1 fs-12 tracking-wider">Total Pendapatan</p>
-                                <h1 class="text-white fw-bold display-6 mb-1">Rp <?= number_format($totalPendapatan, 0, ',', '.'); ?></h1>
+                                <h1 class="text-white fw-bold display-6 mb-1 counter-value" data-target="<?= $totalPendapatan; ?>">0</h1>
                                 <p class="text-white-50 mb-0 small">Klik untuk melihat detail keuangan</p>
                             </div>
                             <div class="icon-shape bg-gradient-info shadow-info" style="filter: hue-rotate(45deg);">
@@ -211,24 +211,34 @@
 
 
 
-    <?php if (session()->get('role') === 'admin' && isset($pendapatan_bulanan)) : ?>
-        <div class="row mb-5 animate__animated animate__fadeInUp">
-            <div class="col-12">
-                <div class="card card-glass border-0 shadow-lg">
+    <?php if (session()->get('role') === 'admin') : ?>
+        <div class="row mb-5 g-4 animate__animated animate__fadeInUp">
+            <div class="col-lg-8">
+                <div class="card card-glass border-0 shadow-lg h-100">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div>
                                 <h4 class="text-white fw-bold mb-0">Grafik Revenue</h4>
                                 <p class="text-white-50 small mb-0">Tren bulanan tahun <?= date('Y'); ?></p>
                             </div>
-                            <div class="text-end">
-                                <span class="badge rounded-pill px-3 py-2" style="background: rgba(0, 210, 255, 0.1); color: #00d2ff;">
-                                    <i class="bi bi-lightning-charge-fill me-1"></i> Live Chart
-                                </span>
-                            </div>
                         </div>
                         <div style="height: 350px; position: relative;">
                             <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card card-glass border-0 shadow-lg h-100">
+                    <div class="card-body p-4">
+                        <h4 class="text-white fw-bold mb-0">Proporsi Pendapatan</h4>
+                        <p class="text-white-50 small mb-4">Bulan <?= date('F'); ?></p>
+                        <div style="height: 280px; position: relative;">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                        <div class="mt-3 text-center">
+                            <small class="text-white-50 italic">Berdasarkan kategori barang yang disewa</small>
                         </div>
                     </div>
                 </div>
@@ -243,7 +253,7 @@
                     <div class="card-body p-4 d-flex align-items-center justify-content-between">
                         <div>
                             <p class="text-white-50 text-uppercase fw-bold mb-1 fs-12 tracking-wider">Total Stok</p>
-                            <h1 class="text-white fw-bold display-5 mb-1"><?= $totalStok; ?></h1>
+                            <h1 class="text-white fw-bold display-5 mb-1 counter-value" data-target="<?= $totalStok; ?>">0</h1>
                             <p class="text-white-50 mb-0 small">Total stok alat kamping tersedia</p>
                         </div>
                         <div class="icon-shape bg-gradient-info shadow-info">
@@ -265,7 +275,7 @@
                                 $db = \Config\Database::connect();
                                 $totalDipinjam = $db->table('transaksi')->where('status_transaksi', 'Dipinjam')->countAllResults();
                                 ?>
-                                <h1 class="text-white fw-bold display-5 mb-1"><?= $totalDipinjam; ?></h1>
+                                <h1 class="text-white fw-bold display-5 mb-1 counter-value" data-target="<?= $totalDipinjam; ?>">0</h1>
                                 <p class="text-white-50 mb-0 small">Klik untuk mengelola transaksi aktif</p>
                             </div>
                             <div class="icon-shape bg-warning shadow-warning" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
@@ -307,7 +317,7 @@
                                             <?= ($rk['kategori']) ? esc($rk['kategori']) : 'Lainnya'; ?>
                                         </p>
                                         <h4 class="text-white mb-0 fw-bold">
-                                            <?= $rk['total']; ?> <span class="fs-12 fw-normal text-white-50">Item</span>
+                                            <span class="counter-value" data-target="<?= $rk['total']; ?>">0</span> <span class="fs-12 fw-normal text-white-50">Item</span>
                                         </h4>
                                     </div>
                                 </div>
@@ -327,6 +337,38 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // --- ANIMASI COUNTER UP ---
+        const counters = document.querySelectorAll('.counter-value');
+        const speed = 100; // Kecepatan animasi
+
+        counters.forEach(counter => {
+            const animate = () => {
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText.replace(/[^0-9]/g, '');
+                const increment = Math.ceil(target / speed);
+
+                if (count < target) {
+                    const nextCount = count + increment > target ? target : count + increment;
+
+                    // Format khusus untuk Pendapatan
+                    if (target > 1000 && counter.closest('.card-body').innerText.includes('Pendapatan')) {
+                        counter.innerText = 'Rp ' + nextCount.toLocaleString('id-ID');
+                    } else {
+                        counter.innerText = nextCount.toLocaleString('id-ID');
+                    }
+                    setTimeout(animate, 20);
+                } else {
+                    if (target > 1000 && counter.closest('.card-body').innerText.includes('Pendapatan')) {
+                        counter.innerText = 'Rp ' + target.toLocaleString('id-ID');
+                    } else {
+                        counter.innerText = target.toLocaleString('id-ID');
+                    }
+                }
+            }
+            animate();
+        });
+
+        // --- LOGIKA GRAFIK REVENUE (LINE) ---
         <?php if (isset($pendapatan_bulanan)) : ?>
             const ctx = document.getElementById('revenueChart').getContext('2d');
             const shadowPlugin = {
@@ -406,6 +448,49 @@
                 }
             });
         <?php endif; ?>
+
+        // --- LOGIKA GRAFIK PIE/DOUGHNUT (KATEGORI) ---
+        <?php if (isset($label_pie)) : ?>
+            const ctxPie = document.getElementById('categoryPieChart').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: <?= $label_pie; ?>,
+                    datasets: [{
+                        data: <?= $data_pie; ?>,
+                        backgroundColor: [
+                            '#0dcaf0', '#0099ff', '#6610f2', '#fd7e14', '#20c997', '#ffc107'
+                        ],
+                        hoverOffset: 20,
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#8b949e',
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#161b22',
+                            callbacks: {
+                                label: (item) => ' ' + item.label + ': Rp ' + item.raw.toLocaleString('id-ID')
+                            }
+                        }
+                    }
+                }
+            });
+        <?php endif; ?>
     });
 </script>
 
@@ -423,10 +508,6 @@
         backdrop-filter: blur(10px) !important;
         border: 1px solid rgba(255, 255, 255, 0.05) !important;
         border-radius: 16px !important;
-        transition: all 0.3s ease;
-    }
-
-    .card-kategori {
         transition: all 0.3s ease;
     }
 
